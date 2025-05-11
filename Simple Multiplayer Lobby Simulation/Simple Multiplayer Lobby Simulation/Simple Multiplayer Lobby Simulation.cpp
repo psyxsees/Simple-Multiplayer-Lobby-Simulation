@@ -8,11 +8,16 @@
             A list representing the lobby and the players in it
             A queue for players waiting for a match
         Features:
+            allow the user to create players that can be added to the hashmap
             See the players in the lobby with their stats printed, im thinking the lobby should probably have a dedicated class for it
-            Enqueue players into the queue
-            Add players to the lobby from the queue(preferably balanced based on stats although this is not required it would be cool)
+            let the user choose and enqueue players into the queue
+            A player can disconnect at random from the lobby, when that happens someone in the queue should be added
+            And when the 5v5 game ends, the players should have a random number of kills and deaths, and a win or loss for their corresponding team.
+            Added players to the lobby from the queue should preferably be balanced based on stats although this is not required it would be cool and should be the last thing added if there is time
 
-        Feel free to add to this or modify for clarity if i missed anything, 
+        most of this project is basically creating fake multiplayer interactions if that makes sense
+
+        Feel free to add to this or modify if something doesn't make sense, 
         please don't delete any of these tasks when done, 
         just put a star next to it if it's done. 
 */
