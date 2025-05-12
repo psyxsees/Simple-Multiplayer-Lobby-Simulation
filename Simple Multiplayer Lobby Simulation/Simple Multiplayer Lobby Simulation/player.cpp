@@ -7,9 +7,11 @@ using namespace std;
 
 // constructor for the player class
 // all stats besides username should be 0
-Player::Player(string username) {
+Player::Player(string username, string heroClass) 
+{
 	this->username = username;
 	team = "";
+	this->heroClass = heroClass;
 
 	kd = 0;
 	allKills = 0;
@@ -21,44 +23,53 @@ Player::Player(string username) {
 }
 
 // returns username
-string Player::GetUsername() {
+string Player::GetUsername()
+{
 	return username;
 }
 
 // returns kd
-double Player::GetKD() {
+double Player::GetKD() 
+{
 	return kd;
 }
 
 // returns win loss balance
-int Player::GetWinBalance() {
+int Player::GetWinBalance() 
+{
 	return winLossBalance;
 }
 
 // Using allKills and allDeaths values find KD.
-void Player::UpdateKD() {
+void Player::UpdateKD() 
+{
 	kd = allKills / allDeaths;
 }
 
 // outcome will be added to winLossBalance, and should be (0,1, or -1)
-void Player::UpdateWinBalance(const int outcome) {
+void Player::UpdateWinBalance(const int outcome) 
+{
 	winLossBalance += outcome;
 }
 
-void Player::AddDeath() {
+void Player::AddDeath() 
+{
 	tempDeath++;
 }
 
-void Player::AddKill() {
+void Player::AddKill() 
+{
 	tempKill++;
 }
 
-void Player::Reset() {
+void Player::Reset() 
+{
 	tempDeath = 0;
 	tempKill = 0;
 }
 
-void Player::PrintPlayerData() {
+void Player::PrintPlayerData() 
+{
 	cout << "-----Player Data-----" << endl;
 	cout << setw(21) << left << "username: " << right << username << endl;
 	cout << setw(21) << left << "kd: " << right << kd << endl;

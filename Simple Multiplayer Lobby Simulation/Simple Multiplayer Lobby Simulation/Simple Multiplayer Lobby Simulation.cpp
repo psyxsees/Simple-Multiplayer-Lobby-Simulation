@@ -25,13 +25,20 @@
 #include <iostream>
 
 #include "player.cpp"
+#include "lobby.cpp"
+#include "pool.cpp"
 
 int main()
 {
-    Player* dude = new Player("guy");
-    dude->PrintPlayerData();
-    delete dude;
+    /*  Test's Player class:
+        Player* dude = new Player("guy");
+        dude->PrintPlayerData();
+        delete dude;
+    */
 
-
+    Pool* allPlayers = new Pool(50);
+    Lobby* gameLobby = new Lobby(10, allPlayers);
+    allPlayers->AddToPool();
+    
 
 }

@@ -4,7 +4,7 @@
 class Player
 {
 	public:
-		Player(string username); // all stats besides username should be 0
+		Player(string username, string heroClass); // all stats besides username should be 0
 		string GetUsername(); // returns username
 		double GetKD(); // returns kd
 		int GetWinBalance(); // returns win loss balance
@@ -17,6 +17,7 @@ class Player
 	private:
 		string username;
 		string team;
+		string heroClass;
 
 		double kd; // kill death ratio
 		int allKills;
