@@ -4,12 +4,19 @@
 class Lobby 
 {
 	public:
-		Lobby(int maxSize, Pool &allPlayers);
+		Lobby(int maxSize, Pool &allPlayers) 
+		{
+			this->maxSize = maxSize;
+			this->allPlayers = &allPlayers;
+		}
+
 		queue<Player> GetQueue();
 		list<Player> GetLobby();
-		void EnqueuePlayers();
+		void QueuePlayers();
 		void AssignWL(); // assign wins and losses to corresponding teammates
-		void AssignKD(); // assign kills and deaths to corresponding teammates
+		void AssignStats();
+		void buildLobby();
+		void printLobby();
 	private:
 		Pool* allPlayers;
 		queue<Player> lobbyQueue;

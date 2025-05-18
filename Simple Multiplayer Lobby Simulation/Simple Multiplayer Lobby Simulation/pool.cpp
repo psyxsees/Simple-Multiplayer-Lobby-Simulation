@@ -13,10 +13,6 @@ unordered_map<string, Player> Pool::GetMap() {
 	return playerPool;
 }
 
-Player Pool::GetPlayer(string username) {
-	return playerPool.get(username);
-}
-
 void Pool::AddToPool() {
 	string username;
 	string heroClass;
@@ -35,4 +31,14 @@ void Pool::AddToPool() {
 
 		playerCount++;
 	}
+}
+
+void Pool::printPool() const {
+	for (const auto& player : playerPool) {
+		player.print();
+	}
+}
+
+list<Player>& Pool::getPlayers() {
+	return players;
 }

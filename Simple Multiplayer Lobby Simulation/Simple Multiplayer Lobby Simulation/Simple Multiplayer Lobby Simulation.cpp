@@ -11,9 +11,7 @@
             allow the user to create players that can be added to the hashmap
             See the players in the lobby with their stats printed, im thinking the lobby should probably have a dedicated class for it
             let the user choose and enqueue players into the queue
-            A player can disconnect at random from the lobby, when that happens someone in the queue should be added
             And when the 5v5 game ends, the players should have a random number of kills and deaths, and a win or loss for their corresponding team.
-            Added players to the lobby from the queue should preferably be balanced based on stats although this is not required it would be cool and should be the last thing added if there is time
 
         most of this project is basically creating fake multiplayer interactions if that makes sense
 
@@ -38,7 +36,17 @@ int main()
 
     Pool* allPlayers = new Pool(50);
     Lobby* gameLobby = new Lobby(10, allPlayers);
-    allPlayers->AddToPool();
     
+    allPlayers->AddToPool();
+    std::cout << "=== Player Pool ===" << std::endl;
+    allPlayers->printPool();
 
+    gameLobby->buildLobby();
+    std::cout << "\n=== Lobby ===" << std::endl;
+    gameLobby->printLobby();
+
+    delete allPlayers;
+    delete gameLobby;
+
+    return 0;
 }

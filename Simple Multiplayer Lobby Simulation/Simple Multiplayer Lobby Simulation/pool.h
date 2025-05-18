@@ -7,8 +7,9 @@ class Pool
 		Pool(int maxSize); //constructor for player pool
 		~Pool() { delete playerPool; }
 		unordered_map<string, Player> GetMap();
-		Player GetPlayer(string username);
+		list<Player>& getPlayers();
 		void AddToPool();
+		void printPool() const;
 	private:
 		unordered_map<string, Player>* playerPool; //string is the username
 
