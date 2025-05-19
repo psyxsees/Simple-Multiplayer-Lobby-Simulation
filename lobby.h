@@ -1,18 +1,27 @@
 #ifndef LOBBY_H
 #define LOBBY_H
 
-#include <deque>
-#include <list>
-#include "Player.h"
+class Lobby 
+{
+	public:
+		Lobby(int maxSize, Pool &allPlayers) 
+		{
+			this->maxSize = maxSize;
+			this->allPlayers = &allPlayers;
+		}
+		~Lobby() { delete allPlayers; }
+		queue<Player> GetQueue();
+		list<Player> GetLobby();
+		void QueuePlayers();
+		void AssignWL(); // assign wins and losses to corresponding teammates
+		void BuildLobby();
+		void PrintLobby();
+	private:
+		Pool* allPlayers;
+		queue<Player> lobbyQueue;
+		list<Player> playersInLobby;
 
-class Lobby {
-private:
-    //Double ended queue for push front/back
-    std::deque<Player> lobby;
-
-public:
-    void buildLobby(std::list<Player>& sortedPlayers);
-    void printLobby() const;
+		int maxSize; //max size of queue and list
 };
 
 #endif

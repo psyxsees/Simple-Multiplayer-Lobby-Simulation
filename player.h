@@ -1,24 +1,26 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <string>
-#include <iostream>
+class Player
+{
+	public:
+		Player(string username, string heroClass); // all stats besides username should be 0
+		string GetUsername(); // returns username
+		double GetKD(); // returns kd
+		int GetWinBalance(); // returns win loss balance
+		void UpdateKD(); // num Kills should be added to allKills, same with allDeaths, and using those updated values find KD.
+		void UpdateWinBalance(int outcome); // outcome will be added to winLossBalance, and should be (0,1, or -1)
+		void AddKD(int kills, int deaths); // adds kills and deaths to allKills and allDeaths
+		void PrintPlayerData();
+	private:
+		string username;
+		string team;
+		string heroClass;
 
-class Player {
-private:
-    std::string name;
-    float killDeathRatio;
-    float winLossRatio;
+		double kd; // kill death ratio
+		int allKills;
+		int allDeaths;
 
-public:
-    Player();
-    Player(std::string name, float kd, float wl);
-
-    float getKDR() const;
-    float getWLR() const;
-    std::string getName() const;
-
-    void print() const;
+		int winLossBalance; // ratio of wins and losses
 };
-
 #endif
