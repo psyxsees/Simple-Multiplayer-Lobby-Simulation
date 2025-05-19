@@ -5,19 +5,24 @@ using namespace std;
 
 #include "lobby.h"
 
-queue<Player> Lobby::GetQueue() {
+queue<Player> Lobby::GetQueue() 
+{
 	return lobbyQueue;
 }
-list<Player> Lobby::GetLobby() {
+list<Player> Lobby::GetLobby() 
+{
 	return playersInLobby;
 }
-void Lobby::QueuePlayers() {
+
+// choose players to add to the lobby queue that will be added to the lobby list later when some empty spots show up
+void Lobby::QueuePlayers() 
+{
     string input;
 
     if (lobbyQueue.size() < maxSize) {
         allPlayers->PrintPlayers();
         cout << endl;
-        cout << "choose players to queue" << endl;
+        cout << "choose players to queue:" << endl;
 
         cin >> input;
         while (input != "-1" && lobbyQueue.size() < maxSize) {
@@ -25,19 +30,21 @@ void Lobby::QueuePlayers() {
             cin >> input;
         }
     }
-	
-	//if queue is full and no game has been started, than fill lobby with pushfront being red team and pushback being blue team (lobby is a list btw)
 }
 
-void Lobby::AssignWL() {
+// assigns win and loss to corresponding teams
+void Lobby::AssignWL() 
+{
     srand(static_cast<unsigned>(time(0)));
     int winRed = rand() % 2; // 1 is win 0 loss
     int winBlue;
     int count;
 
     if (winRed > 0) {
+        win = 'r';
         winBlue = 0;
     } else {
+        win = 'b';
         winBlue = 1;
     }
 
@@ -53,11 +60,18 @@ void Lobby::AssignWL() {
 }
 
 //adds players to lobby from queue
-void Lobby::BuildLobby() {
+//if queue is full and no game has been started, than fill lobby with pushfront being red team and pushback being blue team (lobby is a list btw)
+void Lobby::BuildLobby() 
+{
     int count = 0;
+
+    cout << "-Adding players from the queue to the lobby" << endl;
+
     while (!lobbyQueue.empty() && count < maxSize/2) {
+        //front is blue team
         playersInLobby.push_front(lobbyQueue.front());
         lobbyQueue.pop();
+        //back is red team
         playersInLobby.push_back(lobbyQueue.front());
         lobbyQueue.pop();
         ++count;
@@ -66,13 +80,36 @@ void Lobby::BuildLobby() {
 
 void Lobby::PrintLobby() 
 {
-    std::cout << "--- Blue Team ---" << std::endl;
+    cout << "--- Blue Team ---" << std::endl;
+    if (win == 'b') { cout << "       WIN       " << endl; } 
+    else { cout << "       LOSS       " << endl; }
+
     int count = 0;
     for (Player player : playersInLobby) {
         player.UpdateKD();
-        if (count == maxSize / 2)
-            std::cout << "--- Red Team ---" << std::endl;
+        if (count >= maxSize / 2) {
+            cout << "--- Red Team ---" << std::endl;
+            if (win == 'r') { cout << "       WIN       " << endl; }
+            else { cout << "       LOSS       " << endl; }
+        }
         player.PrintPlayerData();
         ++count;
     }
+}
+
+// supposed to random disconnect some players if the user decides to continue and not restart
+// if they restart disconnect all players
+void Lobby::AllocateLobbyPlayers() 
+{
+    srand(static_cast<unsigned>(time(0)));
+    
+    list<Player>* temp;
+
+    for (Player player : playersInLobby) {
+        if (rand() > 0.5) {
+            temp->push_front(player);
+        }
+    }
+
+    playersInLobby = *temp;
 }

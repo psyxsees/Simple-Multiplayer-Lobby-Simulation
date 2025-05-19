@@ -6,10 +6,10 @@ class Pool
 	public:
 		Pool(int maxSize); //constructor for player pool
 		~Pool() { delete playerPool; }
-		unordered_map<string, Player> GetMap();
+		unordered_map<string, Player>* GetMap();
 		int GetSize();
 		void AddToPool();
-		void printPool() const;
+		void PrintPool();
 	private:
 		unordered_map<string, Player>* playerPool; //string is the username
 

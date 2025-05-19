@@ -9,18 +9,19 @@ class Lobby
 			this->maxSize = maxSize;
 			this->allPlayers = &allPlayers;
 		}
-		~Lobby() { delete allPlayers; }
 		queue<Player> GetQueue();
 		list<Player> GetLobby();
 		void QueuePlayers();
 		void AssignWL(); // assign wins and losses to corresponding teammates
 		void BuildLobby();
 		void PrintLobby();
+		void AllocateLobbyPlayers();
 	private:
 		Pool* allPlayers;
 		queue<Player> lobbyQueue;
 		list<Player> playersInLobby;
 
+		char win = ' '; // r red b blue for PrintLobby
 		int maxSize; //max size of queue and list
 };
 

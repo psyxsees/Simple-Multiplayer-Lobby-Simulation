@@ -53,16 +53,24 @@ int main()
     Pool* allPlayers = new Pool(maxPoolCount);
     Lobby* gameLobby = new Lobby(maxLobbyCount, allPlayers);
     
-    while (play >= 0) {
+    while (true) {
         if (allPlayers->GetSize() < maxPoolCount) {
             allPlayers->AddToPool();
+        } else {
+            cout << "Player Pool is full!";
         }
+
         gameLobby->QueuePlayers();
         gameLobby->BuildLobby();
         gameLobby->AssignWL();
         gameLobby->PrintLobby();
+
         cout << "Play Again?(-1 leave, 0>= continue): ";
         cin >> play;
+
+        if (play >= 0) {
+            gameLobby->AllocateLobbyPlayers();
+        } else { break; }
     }
 
     delete allPlayers;

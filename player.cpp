@@ -62,4 +62,7 @@ void Player::PrintPlayerData()
 	cout << setw(21) << left << "username: " << right << username << endl;
 	cout << setw(21) << left << "kd: " << right << kd << endl;
 	cout << setw(21) << left << "winLossBalance: " << right << winLossBalance << endl;
+	cout << endl;
+	cout << "---------------------" << endl;
+	cout << endl;
 }
