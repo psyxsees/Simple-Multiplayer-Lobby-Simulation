@@ -53,6 +53,20 @@ void Pool::AddToPool()
 		if (username == "-1") {
 			cout << "username: ";
 			cin >> username;
+			bool check = false;
+			for (const auto& pool : playerPool){
+				if (pool.first == username){
+					check = true;
+				}
+			}
+			while (check){
+				cout << "User already exists, please enter another Username: ";
+				cin >> username;
+				for (const auto& pool : playerPool){
+					if (pool.first == username){
+						check = true;
+				}
+			}
 		} else {
 			if (usernames.empty()) {
 				cout << "No usernames available in file. Using fallback name.\n";
