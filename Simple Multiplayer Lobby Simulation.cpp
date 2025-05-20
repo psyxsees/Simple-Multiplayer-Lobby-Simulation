@@ -15,9 +15,9 @@
 
         most of this project is basically creating fake multiplayer interactions if that makes sense
 
-        Feel free to add to this or modify if something doesn't make sense, 
-        please don't delete any of these tasks when done, 
-        just put a star next to it if it's done. 
+        Feel free to add to this or modify if something doesn't make sense,
+        please don't delete any of these tasks when done,
+        just put a star next to it if it's done.
 */
 
 #include <iostream>
@@ -52,25 +52,29 @@ int main()
 
     Pool* allPlayers = new Pool(maxPoolCount);
     Lobby* gameLobby = new Lobby(maxLobbyCount, allPlayers);
-    
+
     while (true) {
-        if (allPlayers->GetSize() < maxPoolCount) {
+        if (allPlayers->GetPlayerNum() < maxPoolCount) 
+        {
             allPlayers->AddToPool();
-        } else {
+        }
+        else {
             cout << "Player Pool is full!";
         }
 
         gameLobby->QueuePlayers();
         gameLobby->BuildLobby();
         gameLobby->AssignWL();
-        gameLobby->PrintLobby();
+        gameLobby->PrintLobby(true);
 
         cout << "Play Again?(-1 leave, 0>= continue): ";
         cin >> play;
 
         if (play >= 0) {
+            cout << "running" << endl;
             gameLobby->AllocateLobbyPlayers();
-        } else { break; }
+        }
+        else { break; }
     }
 
     delete allPlayers;

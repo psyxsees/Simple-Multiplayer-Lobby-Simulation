@@ -5,6 +5,9 @@ using namespace std;
 
 #include "player.h"
 
+// Make the compiler stop crying
+Player::Player() : username(""), team(""), heroClass(""), kd(0), allKills(0), allDeaths(0), winLossBalance(0) {}
+
 // constructor for the player class
 // all stats besides username should be 0
 Player::Player(string username, string heroClass) 
@@ -41,7 +44,13 @@ int Player::GetWinBalance()
 // Using allKills and allDeaths values find KD.
 void Player::UpdateKD() 
 {
-	kd = allKills / allDeaths;
+	if (allDeaths == 0)
+	{
+		kd = allKills;
+	}
+	else {
+		kd = (allKills * 1.0) / (allDeaths * 1.0);
+	}
 }
 
 // outcome will be added to winLossBalance, and should be (0,1, or -1)
@@ -52,6 +61,7 @@ void Player::UpdateWinBalance(int outcome)
 
 void Player::AddKD(int kills, int deaths)
 {
+	//cout << "DEBUG::Added " << kills << " kills && " << deaths << " deaths to player \"" << GetUsername() << "\".\n";
 	allKills += kills;
 	allDeaths += deaths;
 }
@@ -60,6 +70,7 @@ void Player::PrintPlayerData()
 {
 	cout << "-----Player Data-----" << endl;
 	cout << setw(21) << left << "username: " << right << username << endl;
+	cout << setw(21) << left << "hero: " << right << heroClass << endl;
 	cout << setw(21) << left << "kd: " << right << kd << endl;
 	cout << setw(21) << left << "winLossBalance: " << right << winLossBalance << endl;
 	cout << endl;

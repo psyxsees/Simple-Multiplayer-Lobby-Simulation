@@ -1,9 +1,13 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include <string>
+using namespace std;
+
 class Player
 {
 	public:
+		Player(); // make the compiler stop crying
 		Player(string username, string heroClass); // all stats besides username should be 0
 		string GetUsername(); // returns username
 		double GetKD(); // returns kd

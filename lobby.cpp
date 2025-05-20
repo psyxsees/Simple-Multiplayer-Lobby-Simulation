@@ -1,17 +1,32 @@
 #include <iostream>
-#include <queue>
 #include <list>
-#include <unordered_map>
 #include <ctime>
 using namespace std;
 
 #include "lobby.h"
 
-queue<Player> Lobby::GetQueue() 
+queue<Player*> Lobby::GetQueue() 
 {
 	return lobbyQueue;
 }
-list<Player> Lobby::GetLobby() 
+
+bool Lobby::FindInQueue(string name)
+{
+    queue<Player*> lobbyQueueCopy = lobbyQueue;
+
+    while (!lobbyQueueCopy.empty())
+    {
+        if (lobbyQueueCopy.front()->GetUsername() == name)
+        {
+            return true;
+        }
+        lobbyQueueCopy.pop();
+    }
+
+    return false;
+}
+
+list<Player*> Lobby::GetLobby() 
 {
 	return playersInLobby;
 }
@@ -21,22 +36,28 @@ void Lobby::QueuePlayers()
 {
     string input;
 
-    if (lobbyQueue.size() < maxSize) {
+    if (lobbyQueue.size() < maxSize)
+    {
         allPlayers->PrintPool();
         cout << endl;
-        cout << "\nChoose players to queue (-1 stop):" << endl;
+        cout << "Choose players to queue (-1 stop):" << endl;
+        
+        input = "";
 
-        cin >> input;
-        while (input != "-1" && lobbyQueue.size() < maxSize) {
-            // pushing players from hashmap to lobby queue
-            if (allPlayers->count(input)) {
-                lobbyQueue.push((*allPlayers)[input]);
-                cout << "Queued: " << input << endl;
-            }
-            else {
-                cout << "Player not found. Try again: ";
-            }
+        while (input != "-1" && lobbyQueue.size() < maxSize) 
+        {
+            cout << "username: ";
             cin >> input;
+
+            if ((allPlayers->GetMap()->count(input) > 0) && !FindInQueue(input))
+            {
+                cout << "Player " << input << " Added to queue.\n";
+                lobbyQueue.push(allPlayers->GetMap()->at(input));
+            }
+            else 
+            { 
+                cout << "Player could not be added. (Is this a duplicate? Is this a real player?)\n";
+            }
         }
     }
 }
@@ -44,10 +65,9 @@ void Lobby::QueuePlayers()
 // assigns win and loss to corresponding teams
 void Lobby::AssignWL() 
 {
-    srand(static_cast<unsigned>(time(0)));
     int winRed = rand() % 2; // 1 is win 0 loss
     int winBlue;
-    int count;
+    int count = 0;
 
     if (winRed > 0) {
         win = 'r';
@@ -57,14 +77,25 @@ void Lobby::AssignWL()
         winBlue = 1;
     }
 
-    for (Player player : playersInLobby) {
-        if (count < playersInLobby.size() / 2) {
-            player.UpdateWinBalance(winBlue);
-        } else {
-            player.UpdateWinBalance(winRed);
+    list<Player*> lobbyListC = playersInLobby;
+
+    Player* curPlayer = nullptr;
+    for (int i = 0; i < maxSize; i++)
+    {
+        curPlayer = lobbyListC.front();
+        lobbyListC.pop_front();
+
+        if (i < maxSize / 2) 
+        {
+            curPlayer->UpdateWinBalance(winBlue);
         }
-        player.AddKD(rand() % 50, rand() % 50);
-        count++;
+        else 
+        {
+            curPlayer->UpdateWinBalance(winRed);
+        }
+
+        cout << "running addKD" << endl;
+        curPlayer->AddKD(rand() % 50, rand() % 50);
     }
 }
 
@@ -72,53 +103,73 @@ void Lobby::AssignWL()
 //if queue is full and no game has been started, than fill lobby with pushfront being red team and pushback being blue team (lobby is a list btw)
 void Lobby::BuildLobby() 
 {
-    int count = 0;
-
     cout << "-Adding players from the queue to the lobby" << endl;
 
-    while (!lobbyQueue.empty() && count < maxSize/2) {
+    while (!lobbyQueue.empty()) {//&& count < maxSize/2) {
         //front is blue team
         playersInLobby.push_front(lobbyQueue.front());
         lobbyQueue.pop();
+
+        if (lobbyQueue.empty()) return;
+        
         //back is red team
         playersInLobby.push_back(lobbyQueue.front());
         lobbyQueue.pop();
-        ++count;
     }
 }
 
-void Lobby::PrintLobby() 
+void Lobby::PrintLobby(bool showWin) 
 {
+    cout << "Results: " << std::endl;
     cout << "--- Blue Team ---" << std::endl;
-    if (win == 'b') { cout << "       WIN       " << endl; } 
-    else { cout << "       LOSS       " << endl; }
+    if (showWin) {
+        if (win == 'b') { cout << "       WIN        " << endl; }
+        else { cout << "       LOSS       " << endl; }
+    }
 
     int count = 0;
-    for (Player player : playersInLobby) {
-        player.UpdateKD();
-        if (count >= maxSize / 2) {
-            cout << "--- Red Team ---" << std::endl;
-            if (win == 'r') { cout << "       WIN       " << endl; }
-            else { cout << "       LOSS       " << endl; }
+    for (Player* player : playersInLobby) 
+    {
+        player->UpdateKD();
+
+        if (count == maxSize/2) { cout << "--- Red Team ---" << std::endl; }
+        if (count >= maxSize / 2) 
+        {
+            if (showWin) {
+                if (win == 'r') { cout << "       WIN        " << endl; }
+                else { cout << "       LOSS       " << endl; }
+            }
         }
-        player.PrintPlayerData();
+
+        player->PrintPlayerData();
         ++count;
     }
 }
 
-// supposed to random disconnect some players if the user decides to continue and not restart
-// if they restart disconnect all players
+// when restarting disconnect all players
 void Lobby::AllocateLobbyPlayers() 
 {
-    srand(static_cast<unsigned>(time(0)));
-    
-    list<Player>* temp;
+    list<Player*> temp;
+    //queue<Player*> emptyQueue;
 
-    for (Player player : playersInLobby) {
+    /*
+    activePlayers = 0;
+
+    for (Player* player : playersInLobby) {
         if (rand() > 0.5) {
-            temp->push_front(player);
+            temp.push_front(player);
+            activePlayers++;
         }
     }
 
-    playersInLobby = *temp;
+    if (temp.empty()) return;
+    */
+
+    
+    while (!lobbyQueue.empty()){
+        lobbyQueue.pop();
+    }
+
+    playersInLobby = temp;
+    //lobbyQueue = emptyQueue;
 }

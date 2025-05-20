@@ -4,6 +4,8 @@
 #include <vector>
 #include <ctime>
 #include <cstdlib>
+#include <string>
+
 using namespace std;
 
 #include "pool.h"
@@ -12,16 +14,21 @@ Pool::Pool(int maxSize)
 {
 	this->maxSize = maxSize;
 	playerCount = 0;
-	playerPool = new unordered_map<string, Player>;
+	playerPool = new unordered_map<string, Player*>;
 	srand(static_cast<unsigned>(time(0)));
 }
 
-unordered_map<string, Player>* Pool::GetMap()
+unordered_map<string, Player*>* Pool::GetMap()
 {
 	return playerPool;
 }
 
 int Pool::GetSize()
+{
+	return maxSize;
+}
+
+int Pool::GetPlayerNum()
 {
 	return playerCount;
 }
@@ -31,7 +38,12 @@ void Pool::AddToPool()
 	ifstream ifs("usernames.txt");
 	vector<string> usernames;
 	string line;
-	ifs.open("usernames.txt", std::ifstream::in);
+
+	// Check for file open success
+	if (!ifs.is_open())
+	{
+		cout << "Error: Failed to open usernames.txt" << endl;
+	}
 
 	// Load all usernames into a vector
 	while (getline(ifs, line)) {
@@ -51,27 +63,24 @@ void Pool::AddToPool()
 		cout << "Custom or Random username? (-1 custom, 0 random):";
 		cin >> username;
 
-		if (username == "-1") {
-			//dupe check + ask for username
-			do {
-				cout << "username: ";
+		if (username == "-1") 
+		{
+			check = true;
+			while (check)
+			{
+				cout << "Username: ";
 				cin >> username;
 
-				if (playerPool->count(username) > 0) {
+				if (playerPool->count(username) > 0)
+				{
 					check = true;
+					cout << "That user has already joined, please enter another username.\n";
 				}
-				else { check = false; }
-			} while (check);
-		} else {
-			//dupe check + get random username
-			do {
-				username = usernames[rand() % usernames.size()];
-
-				if (playerPool->count(username) > 0) {
-					check = true;
+				else
+				{
+					check = false;
 				}
-				else { check = false; }
-			} while (check);
+			}
 
 			// define hero class
 			hero = rand() % 3;
@@ -82,11 +91,44 @@ void Pool::AddToPool()
 				heroClass = "Medium";
 			}
 			else {
-				heroClass = "Small";
+				heroClass = "Light";
 			}
 
-			Player player(username, heroClass);
-			(*playerPool)[username] = player;
+			Player* newPlayer = new Player(username, heroClass);
+			playerPool->emplace(username, newPlayer);
+
+			playerCount++;
+		} 
+		else 
+		{
+			//dupe check + get random username
+			
+			check = true;
+			while (check)
+			{
+				username = usernames[rand() % usernames.size()];
+
+				if (playerPool->count(username) > 0) 
+				{
+					check = true;
+				}
+				else check = false;
+			}
+
+			// define hero class
+			hero = rand() % 3;
+			if (hero == 0) {
+				heroClass = "Heavy";
+			}
+			else if (hero == 1) {
+				heroClass = "Medium";
+			}
+			else {
+				heroClass = "Light";
+			}
+
+			Player* newPlayer = new Player(username, heroClass);
+			playerPool->emplace(username, newPlayer);
 
 			playerCount++;
 		}
@@ -95,7 +137,8 @@ void Pool::AddToPool()
 
 void Pool::PrintPool()
 {
-	for (auto& pair : *playerPool) {
-		pair.second.PrintPlayerData();
+	cout << "--- Player Pool ---" << endl;
+	for (auto& item : *playerPool) {
+		item.second->PrintPlayerData();
 	}
 }
