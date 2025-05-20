@@ -8,7 +8,7 @@ using namespace std;
 
 #include "pool.h"
 
-Pool::Pool(int maxSize) 
+Pool::Pool(int maxSize)
 {
 	this->maxSize = maxSize;
 	playerCount = 0;
@@ -16,17 +16,17 @@ Pool::Pool(int maxSize)
 	srand(static_cast<unsigned>(time(0)));
 }
 
-unordered_map<string, Player>* Pool::GetMap() 
+unordered_map<string, Player>* Pool::GetMap()
 {
 	return playerPool;
 }
 
-int Pool::GetSize() 
+int Pool::GetSize()
 {
 	return playerCount;
 }
 
-void Pool::AddToPool() 
+void Pool::AddToPool()
 {
 	ifstream ifs("usernames.txt");
 	vector<string> usernames;
@@ -43,6 +43,7 @@ void Pool::AddToPool()
 	string username;
 	string heroClass;
 	int hero;
+	bool check = false;
 
 	cout << "Create players for the Player Pool:" << endl;
 
@@ -51,65 +52,48 @@ void Pool::AddToPool()
 		cin >> username;
 
 		if (username == "-1") {
-			cout << "username: ";
-			cin >> username;
-			bool check = false;
-			for (const auto& pool : playerPool){
-				if (pool.first == username){
+			//dupe check + ask for username
+			do {
+				cout << "username: ";
+				cin >> username;
+
+				if (playerPool->count(username) > 0) {
 					check = true;
 				}
-			}
-			while (check){
-				cout << "User already exists, please enter another Username: ";
-				cin >> username;
-				for (const auto& pool : playerPool){
-					if (pool.first == username){
-						check = true;
-				}
-			}
+				else { check = false; }
+			} while (check);
 		} else {
-			if (usernames.empty()) {
-				cout << "No usernames available in file. Using fallback name.\n";
-				username = "Player" + to_string(playerCount);
+			//dupe check + get random username
+			do {
+				username = usernames[rand() % usernames.size()];
+
+				if (playerPool->count(username) > 0) {
+					check = true;
+				}
+				else { check = false; }
+			} while (check);
+
+			// define hero class
+			hero = rand() % 3;
+			if (hero == 0) {
+				heroClass = "Heavy";
+			}
+			else if (hero == 1) {
+				heroClass = "Medium";
 			}
 			else {
-				username = usernames[rand() % usernames.size()];
-				bool check = false;
-				for (const auto& pool : playerPool){
-					if (pool.first == username){
-						check = true;
-					}
-				}
-				while (check){
-					username = usernames[rand() % usernames.size()];
-					for (const auto& pool : playerPool){
-						if (pool.first == username){
-							check = true;
-					}
-				}
+				heroClass = "Small";
 			}
-		}
-		
-		// define hero class
-		hero = rand() % 3;
-		if (hero == 0) {
-			heroClass = "Heavy";
-		} else if (hero == 1) {
-			heroClass = "Medium";
-		} else {
-			heroClass = "Small";
-		}
 
-		Player player(username, heroClass);
-		(*playerPool)[username] = player;
+			Player player(username, heroClass);
+			(*playerPool)[username] = player;
 
-		playerCount++;
+			playerCount++;
+		}
 	}
-
-	ifs.close();
 }
 
-void Pool::PrintPool() 
+void Pool::PrintPool()
 {
 	for (auto& pair : *playerPool) {
 		pair.second.PrintPlayerData();
