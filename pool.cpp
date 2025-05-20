@@ -1,6 +1,9 @@
 #include <iostream>
 #include <unordered_map>
 #include <fstream>
+#include <vector>
+#include <ctime>
+#include <cstdlib>
 using namespace std;
 
 #include "pool.h"
@@ -9,6 +12,8 @@ Pool::Pool(int maxSize)
 {
 	this->maxSize = maxSize;
 	playerCount = 0;
+	playerPool = new unordered_map<string, Player>;
+	srand(static_cast<unsigned>(time(0)));
 }
 
 unordered_map<string, Player>* Pool::GetMap() 
@@ -23,8 +28,17 @@ int Pool::GetSize()
 
 void Pool::AddToPool() 
 {
-	std::ifstream ifs;
+	ifstream ifs("usernames.txt");
+	vector<string> usernames;
+	string line;
 	ifs.open("usernames.txt", std::ifstream::in);
+
+	// Load all usernames into a vector
+	while (getline(ifs, line)) {
+		if (!line.empty())
+			usernames.push_back(line);
+	}
+	ifs.close();
 
 	string username;
 	string heroClass;
@@ -33,16 +47,20 @@ void Pool::AddToPool()
 	cout << "Create players for the Player Pool:" << endl;
 
 	while (playerCount < maxSize) {
-		srand(static_cast<unsigned>(time(0)));
-
 		cout << "Custom or Random username? (-1 custom, 0 random):";
 		cin >> username;
+
 		if (username == "-1") {
 			cout << "username: ";
 			cin >> username;
 		} else {
-			// implement random username
-			username;
+			if (usernames.empty()) {
+				cout << "No usernames available in file. Using fallback name.\n";
+				username = "Player" + to_string(playerCount);
+			}
+			else {
+				username = usernames[rand() % usernames.size()];
+			}
 		}
 		
 		// define hero class
@@ -56,7 +74,7 @@ void Pool::AddToPool()
 		}
 
 		Player player(username, heroClass);
-		*playerPool[username] = player;
+		(*playerPool)[username] = player;
 
 		playerCount++;
 	}
@@ -66,7 +84,7 @@ void Pool::AddToPool()
 
 void Pool::PrintPool() 
 {
-	for (Player player : *playerPool) {
-		player.PrintPlayerData();
+	for (auto& pair : *playerPool) {
+		pair.second.PrintPlayerData();
 	}
 }

@@ -1,6 +1,8 @@
 #include <iostream>
 #include <queue>
 #include <list>
+#include <unordered_map>
+#include <ctime>
 using namespace std;
 
 #include "lobby.h"
@@ -20,13 +22,20 @@ void Lobby::QueuePlayers()
     string input;
 
     if (lobbyQueue.size() < maxSize) {
-        allPlayers->PrintPlayers();
+        allPlayers->PrintPool();
         cout << endl;
-        cout << "choose players to queue:" << endl;
+        cout << "\nChoose players to queue (-1 stop):" << endl;
 
         cin >> input;
         while (input != "-1" && lobbyQueue.size() < maxSize) {
-            lobbyQueue.push(allPlayers[input]); // pushing players from hashmap to lobby queue
+            // pushing players from hashmap to lobby queue
+            if (allPlayers->count(input)) {
+                lobbyQueue.push((*allPlayers)[input]);
+                cout << "Queued: " << input << endl;
+            }
+            else {
+                cout << "Player not found. Try again: ";
+            }
             cin >> input;
         }
     }
