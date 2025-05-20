@@ -1,32 +1,90 @@
-#include "Pool.h"
-#include <cstdlib>
+#include <iostream>
+#include <unordered_map>
+#include <fstream>
+#include <vector>
 #include <ctime>
-#include <algorithm>
+#include <cstdlib>
+using namespace std;
 
-void Pool::fillPool(int count) {
-    //Seed time for a new random number generator to fill the pool with reasonable stats
-    srand(static_cast<unsigned>(time(0)));
-    for (int i = 0; i < count; ++i) {
-        float kd = static_cast<float>(rand() % 201 + 50) / 100.0f;
-        float wl = static_cast<float>(rand() % 201 + 50) / 100.0f;
-        players.emplace_back("Player" + std::to_string(i + 1), kd, wl);
-    }
-}
-//Lambda function to sort based on WL KD emphasis change constants to change lobby emphasis
-void Pool::sortPool() {
-    players.sort([](const Player& a, const Player& b) {
-        float scoreA = (a.getKDR() * 0.4f) + (a.getWLR() * 0.6f);
-        float scoreB = (b.getKDR() * 0.4f) + (b.getWLR() * 0.6f);
-        return scoreA > scoreB;
-        });
+#include "pool.h"
+
+Pool::Pool(int maxSize) 
+{
+	this->maxSize = maxSize;
+	playerCount = 0;
+	playerPool = new unordered_map<string, Player>;
+	srand(static_cast<unsigned>(time(0)));
 }
 
-void Pool::printPool() const {
-    for (const auto& player : players) {
-        player.print();
-    }
+unordered_map<string, Player>* Pool::GetMap() 
+{
+	return playerPool;
 }
 
-std::list<Player>& Pool::getPlayers() {
-    return players;
+int Pool::GetSize() 
+{
+	return playerCount;
+}
+
+void Pool::AddToPool() 
+{
+	ifstream ifs("usernames.txt");
+	vector<string> usernames;
+	string line;
+	ifs.open("usernames.txt", std::ifstream::in);
+
+	// Load all usernames into a vector
+	while (getline(ifs, line)) {
+		if (!line.empty())
+			usernames.push_back(line);
+	}
+	ifs.close();
+
+	string username;
+	string heroClass;
+	int hero;
+
+	cout << "Create players for the Player Pool:" << endl;
+
+	while (playerCount < maxSize) {
+		cout << "Custom or Random username? (-1 custom, 0 random):";
+		cin >> username;
+
+		if (username == "-1") {
+			cout << "username: ";
+			cin >> username;
+		} else {
+			if (usernames.empty()) {
+				cout << "No usernames available in file. Using fallback name.\n";
+				username = "Player" + to_string(playerCount);
+			}
+			else {
+				username = usernames[rand() % usernames.size()];
+			}
+		}
+		
+		// define hero class
+		hero = rand() % 3;
+		if (hero == 0) {
+			heroClass = "Heavy";
+		} else if (hero == 1) {
+			heroClass = "Medium";
+		} else {
+			heroClass = "Small";
+		}
+
+		Player player(username, heroClass);
+		(*playerPool)[username] = player;
+
+		playerCount++;
+	}
+
+	ifs.close();
+}
+
+void Pool::PrintPool() 
+{
+	for (auto& pair : *playerPool) {
+		pair.second.PrintPlayerData();
+	}
 }

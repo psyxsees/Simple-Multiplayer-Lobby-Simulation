@@ -1,18 +1,20 @@
 #ifndef POOL_H
 #define POOL_H
 
-#include <list>
-#include "Player.h"
+class Pool 
+{
+	public:
+		Pool(int maxSize); //constructor for player pool
+		~Pool() { delete playerPool; }
+		unordered_map<string, Player>* GetMap();
+		int GetSize();
+		void AddToPool();
+		void PrintPool();
+	private:
+		unordered_map<string, Player>* playerPool; //string is the username
 
-class Pool {
-private:
-    std::list<Player> players;
-
-public:
-    void fillPool(int count);
-    void sortPool();
-    void printPool() const;
-    std::list<Player>& getPlayers();
+		int maxSize;
+		int playerCount;
 };
 
 #endif
