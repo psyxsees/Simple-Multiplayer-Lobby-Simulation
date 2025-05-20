@@ -60,6 +60,19 @@ void Pool::AddToPool()
 			}
 			else {
 				username = usernames[rand() % usernames.size()];
+				bool check = false;
+				for (const auto& pool : playerPool){
+					if (pool.first == username){
+						check = true;
+					}
+				}
+				while (check){
+					username = usernames[rand() % usernames.size()];
+					for (const auto& pool : playerPool){
+						if (pool.first == username){
+							check = true;
+					}
+				}
 			}
 		}
 		
